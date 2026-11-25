@@ -313,7 +313,61 @@ export default function App() {
           </div>
         </section>
 
-        {/* Section 4: Lead Capture Form -> Direct Redirect to WhatsApp Group */}
+        {/* Section 3.5: Oferta e Investimento */}
+        <section id="investimento" className="py-14 lg:py-16 bg-[#F3ECF7]/75 border-b border-[#E4D5EC]">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="bg-white border border-[#D6B575]/60 rounded-2xl p-8 sm:p-10 shadow-sm grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+              <div className="md:col-span-7 space-y-4">
+                <div>
+                  <p className="text-sm font-medium text-[#A8803B] mb-1.5">
+                    Investimento da Imersão
+                  </p>
+                  <h2 className="font-display text-3xl sm:text-4xl font-semibold text-[#2E1639] text-balance">
+                    Imersão Meu 2027 com Propósito
+                  </h2>
+                </div>
+
+                <ul className="space-y-2.5 text-sm text-[#2E1639]">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#5B236E] mt-0.5 shrink-0" aria-hidden="true" />
+                    <span className="tabular-nums">04 encontros online (dias 07, 14, 21 e 28 de dezembro)</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#5B236E] mt-0.5 shrink-0" aria-hidden="true" />
+                    <span>E-book completo de Planejamento Meu 2027</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-[#5B236E] mt-0.5 shrink-0" aria-hidden="true" />
+                    <span>Condução com Eliete Oliveira (Psicóloga, Pastora e Escritora)</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="md:col-span-5 md:border-l md:border-[#E4D5EC] md:pl-8 pt-6 md:pt-0 border-t md:border-t-0 border-[#E4D5EC] flex flex-col items-start md:items-center md:text-center space-y-3">
+                <p className="text-sm font-medium text-[#634B6F]">
+                  Valor único de participação
+                </p>
+                <div className="flex items-baseline gap-1 text-[#5B236E] tabular-nums">
+                  <span className="text-xl font-semibold">R$</span>
+                  <span className="font-display text-5xl sm:text-6xl font-bold leading-none">97</span>
+                  <span className="text-xl font-semibold">,00</span>
+                </div>
+                <p className="text-xs text-[#634B6F]">
+                  Pagamento seguro via InfinitePay após o cadastro
+                </p>
+                <a
+                  href="#inscricao"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#5B236E] text-white text-sm font-semibold hover:bg-[#4A1A5B] transition-colors shadow-sm whitespace-nowrap shrink-0 mt-1"
+                >
+                  <span>Preencher Inscrição</span>
+                  <ArrowRight className="w-4 h-4 shrink-0" aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 4: Lead Capture Form -> Direct Redirect to InfinitePay */}
         <section id="inscricao" className="py-16 lg:py-24 bg-[#FAF7FC]">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
