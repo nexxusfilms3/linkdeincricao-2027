@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#4A1A5B" />
+  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#D6B575" stroke-opacity="0.45" stroke-width="1.5" />
+  <g transform="translate(8 14) scale(0.6)">
+    <!-- Left wing: warm gold silhouette -->
+    <path
+      d="M38 24C34 12 20 3 9 7C2 10 3 23 13 30C21 35 31 33 38 30V24Z"
+      fill="#E5C585"
+    />
+    <path
+      d="M38 31C30 33 17 36 14 45C12 52 20 56 27 52C33 48 37 39 38 33V31Z"
+      fill="#E5C585"
+    />
+    <!-- Right wing: crisp cream/gold line-art -->
+    <path
+      d="M42 24C46 12 60 3 71 7C78 10 77 23 67 30C59 35 49 33 42 30V24Z"
+      stroke="#FAF7FC"
+      stroke-width="2.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M42 31C50 33 63 36 66 45C68 52 60 56 53 52C47 48 43 39 42 33V31Z"
+      stroke="#FAF7FC"
+      stroke-width="2.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M46 21C53 16 62 15 68 18M45 27C54 25 62 26 66 29M45 36C51 39 58 43 60 48"
+      stroke="#D6B575"
+      stroke-width="2"
+      stroke-linecap="round"
+    />
+    <!-- Body and antennae -->
+    <ellipse cx="40" cy="31" rx="2.6" ry="12" fill="#FAF7FC" />
+    <path
+      d="M39 19C37 13 34 10 31 9M41 19C43 13 46 10 49 9"
+      stroke="#FAF7FC"
+      stroke-width="2"
+      stroke-linecap="round"
+    />
+  </g>
+</svg>

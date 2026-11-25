@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-plum-950: #24102D;
+  --color-plum-900: #2E1639;
+  --color-plum-800: #4A1A5B;
+  --color-plum-700: #5B236E;
+  --color-plum-600: #733586;
+  --color-plum-200: #E4D5EC;
+  --color-plum-100: #F3ECF7;
+  --color-plum-50: #FAF7FC;
+  --color-gold-600: #A8803B;
+  --color-gold-500: #C69D53;
+  --color-gold-400: #D6B575;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-sans);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,87 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isVerifiedUser() && (
+        request.auth.token.email == 'contato.yadastudio@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidRegistration(data) {
+      return data.keys().hasAll(['fullName', 'whatsapp', 'email', 'status', 'createdAt']) &&
+        data.keys().hasOnly(['fullName', 'whatsapp', 'email', 'cityState', 'expectation', 'status', 'createdAt']) &&
+        data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 120 &&
+        data.whatsapp is string && data.whatsapp.size() >= 8 && data.whatsapp.size() <= 25 && data.whatsapp.matches('^[0-9+()\\s\\-]+$') &&
+        data.email is string && data.email.size() >= 5 && data.email.size() <= 160 && data.email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$') &&
+        (!('cityState' in data) || (data.cityState is string && data.cityState.size() <= 100)) &&
+        (!('expectation' in data) || (data.expectation is string && data.expectation.size() <= 500)) &&
+        data.status is string && data.status in ['confirmada', 'no_grupo'] &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidAdminUser(data) {
+      return data.keys().hasAll(['email', 'createdAt']) &&
+        data.keys().hasOnly(['email', 'name', 'createdAt']) &&
+        data.email is string && data.email.size() >= 5 && data.email.size() <= 160 && data.email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$') &&
+        (!('name' in data) || (data.name is string && data.name.size() <= 120)) &&
+        data.createdAt is timestamp;
+    }
+
+    match /registrations/{registrationId} {
+      allow get: if isValidId(registrationId) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isValidId(registrationId) &&
+        isValidRegistration(incoming()) &&
+        incoming().status == 'confirmada' &&
+        incoming().createdAt == request.time;
+      allow update: if isValidId(registrationId) &&
+        isAdmin() &&
+        isValidRegistration(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status']);
+      allow delete: if isValidId(registrationId) && isAdmin();
+    }
+
+    match /admins/{adminId} {
+      allow get: if isValidId(adminId) && (isAdmin() || (isVerifiedUser() && request.auth.uid == adminId));
+      allow list: if isAdmin();
+      allow create: if isValidId(adminId) &&
+        isAdmin() &&
+        isValidAdminUser(incoming()) &&
+        incoming().createdAt == request.time;
+      allow update: if isValidId(adminId) &&
+        isAdmin() &&
+        isValidAdminUser(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['name', 'email']);
+      allow delete: if isValidId(adminId) && isAdmin();
+    }
+  }
+}
