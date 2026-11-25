@@ -353,7 +353,7 @@ export default function App() {
                   <span className="text-xl font-semibold">,00</span>
                 </div>
                 <p className="text-xs text-[#634B6F]">
-                  Pagamento seguro via InfinitePay após o cadastro
+                  Pix (QR Code ou Chave) ou Cartão via InfinitePay
                 </p>
                 <a
                   href="#inscricao"
@@ -407,11 +407,11 @@ export default function App() {
                     </span>
                     <div>
                       <p className="text-sm font-semibold text-[#2E1639]">
-                        Redirecionamento imediato ao pagamento
+                        Escolha como deseja pagar (R$ 97,00)
                       </p>
                       <p className="text-sm text-[#634B6F]">
-                        Ao enviar o formulário, você é direcionada automaticamente para finalizar o
-                        pagamento via InfinitePay.
+                        Após enviar o formulário, pague com QR Code Pix, Chave Pix ou Link de
+                        Pagamento no Cartão (InfinitePay).
                       </p>
                     </div>
                   </div>

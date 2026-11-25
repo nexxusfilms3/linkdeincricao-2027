@@ -4,6 +4,10 @@ export const WHATSAPP_GROUP_URL =
 export const PAYMENT_CHECKOUT_URL =
   'https://link.infinitepay.io/e196421/VC1D-bcDg4tNYuz-97,00';
 
+export const PIX_KEY = 'ba8c6942-d2db-4013-9926-23ea4da71838';
+export const PIX_RECIPIENT_NAME = 'ELIETE OLIVEIRA BATISTA D';
+export const PIX_QR_IMAGE_PATH = '/assets/aistudio/pix-qrcode.png';
+
 export const POSTER_IMAGE_PATH =
   '/assets/aistudio/WhatsApp_Image_2026-11-19_at_09.16.17_c2f6f9f1.jpeg';
 
@@ -77,5 +81,5 @@ export const SUMMARY_HIGHLIGHTS = [
   { label: 'Datas dos Encontros', value: '07, 14, 21 e 28/12' },
   { label: 'Formato', value: '04 Encontros Online' },
   { label: 'Material Incluso', value: 'E-book de Planejamento' },
-  { label: 'Inscrição', value: 'Pagamento via InfinitePay' },
+  { label: 'Investimento', value: 'R$ 97,00 (Pix ou Cartão)' },
 ];
