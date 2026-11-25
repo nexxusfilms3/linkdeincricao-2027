@@ -407,11 +407,11 @@ export default function App() {
                     </span>
                     <div>
                       <p className="text-sm font-semibold text-[#2E1639]">
-                        Escolha como deseja pagar (R$ 97,00)
+                        Redirecionamento imediato ao checkout (R$ 97,00)
                       </p>
                       <p className="text-sm text-[#634B6F]">
-                        Após enviar o formulário, pague com QR Code Pix, Chave Pix ou Link de
-                        Pagamento no Cartão (InfinitePay).
+                        Ao enviar o formulário, você é direcionada automaticamente para o checkout da
+                        InfinitePay, onde pode pagar via Pix ou Cartão.
                       </p>
                     </div>
                   </div>

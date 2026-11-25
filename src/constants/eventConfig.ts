@@ -2,11 +2,7 @@ export const WHATSAPP_GROUP_URL =
   'https://chat.whatsapp.com/C34kCxQFuJqGgoichE9HWg?s=cl&p=i&mlu=4&ilr=4&iam';
 
 export const PAYMENT_CHECKOUT_URL =
-  'https://link.infinitepay.io/e196421/VC1D-bcDg4tNYuz-97,00';
-
-export const PIX_KEY = 'ba8c6942-d2db-4013-9926-23ea4da71838';
-export const PIX_RECIPIENT_NAME = 'ELIETE OLIVEIRA BATISTA D';
-export const PIX_QR_IMAGE_PATH = '/assets/aistudio/pix-qrcode.png';
+  'https://invoice.infinitepay.io/e196421/aycfo50kNO';
 
 export const POSTER_IMAGE_PATH =
   '/assets/aistudio/WhatsApp_Image_2026-11-19_at_09.16.17_c2f6f9f1.jpeg';

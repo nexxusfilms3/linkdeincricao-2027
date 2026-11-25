@@ -9,16 +9,12 @@ import {
   CreditCard,
   ExternalLink,
   Loader2,
-  QrCode,
 } from 'lucide-react';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import {
   LEAD_NOTIFICATION_EMAIL,
   LEAD_NOTIFICATION_RECIPIENT_NAME,
   PAYMENT_CHECKOUT_URL,
-  PIX_KEY,
-  PIX_QR_IMAGE_PATH,
-  PIX_RECIPIENT_NAME,
   VALIDATION_RULES,
 } from '../constants/eventConfig';
 
@@ -53,7 +49,6 @@ async function notifyLeadByEmail(data: {
   email: string;
   cityState?: string;
   expectation?: string;
-  paymentMethod: 'pix' | 'card';
 }): Promise<void> {
   try {
     await fetch(
@@ -76,16 +71,12 @@ async function notifyLeadByEmail(data: {
           'E-mail': data.email,
           'Cidade / Estado': data.cityState || 'Não informado',
           'Expectativa para 2027': data.expectation || 'Não informado',
-          'Forma de pagamento':
-            data.paymentMethod === 'pix'
-              ? 'Pix (QR Code ou Chave)'
-              : 'Cartão (Link InfinitePay)',
           'ID Firebase': data.registrationId,
         }),
       },
     );
   } catch {
-    // Email notification is best-effort and must never block the participant flow.
+    // Email notification is best-effort and must never block the checkout redirect.
   }
 }
 
@@ -99,20 +90,15 @@ export function RegistrationForm() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card'>('pix');
-  const [activePaymentTab, setActivePaymentTab] = useState<'pix' | 'card'>('pix');
-  const [qrError, setQrError] = useState(false);
-
   const [submittedName, setSubmittedName] = useState<string | null>(null);
   const [countdown, setCountdown] = useState<number>(3);
-  const [autoRedirectActive, setAutoRedirectActive] = useState(false);
-  const [copiedKey, setCopiedKey] = useState(false);
+  const [autoRedirectActive, setAutoRedirectActive] = useState(true);
   const [copiedLink, setCopiedLink] = useState(false);
 
   const isInsideIframe = typeof window !== 'undefined' && window.self !== window.top;
 
   useEffect(() => {
-    if (!submittedName || !autoRedirectActive || activePaymentTab !== 'card') return;
+    if (!submittedName || !autoRedirectActive) return;
     if (countdown <= 0) {
       if (!isInsideIframe) {
         window.location.assign(PAYMENT_CHECKOUT_URL);
@@ -125,7 +111,7 @@ export function RegistrationForm() {
     }, 1000);
 
     return () => window.clearTimeout(timer);
-  }, [submittedName, countdown, autoRedirectActive, activePaymentTab, isInsideIframe]);
+  }, [submittedName, countdown, autoRedirectActive, isInsideIframe]);
 
   function validate(): boolean {
     const nextErrors: FormErrors = {};
@@ -218,17 +204,15 @@ export function RegistrationForm() {
         email: String(payload.email),
         cityState: trimmedCity || undefined,
         expectation: trimmedExpectation || undefined,
-        paymentMethod,
       });
 
       const firstName = fullName.trim().split(/\s+/)[0] || 'Participante';
       setSubmittedName(firstName);
-      setActivePaymentTab(paymentMethod);
       setCountdown(3);
-      setAutoRedirectActive(paymentMethod === 'card');
+      setAutoRedirectActive(true);
     } catch (error) {
       setSubmitError(
-        'Não foi possível salvar sua inscrição agora. Tente novamente ou escolha uma das formas de pagamento abaixo.',
+        'Não foi possível salvar sua inscrição agora. Tente novamente ou acesse diretamente o checkout abaixo.',
       );
       if (
         error instanceof Error &&
@@ -243,16 +227,6 @@ export function RegistrationForm() {
       }
     } finally {
       setIsSubmitting(false);
-    }
-  }
-
-  async function handleCopyPixKey() {
-    try {
-      await navigator.clipboard.writeText(PIX_KEY);
-      setCopiedKey(true);
-      window.setTimeout(() => setCopiedKey(false), 2500);
-    } catch {
-      setCopiedKey(false);
     }
   }
 
@@ -293,148 +267,60 @@ export function RegistrationForm() {
           </h3>
           <p className="text-base text-[#634B6F] leading-relaxed mb-6">
             Seus dados para a imersão <strong className="text-[#2E1639]">Meu 2027 com Propósito</strong>{' '}
-            foram registrados. Escolha abaixo como deseja concluir o pagamento:
+            foram registrados. Conclua agora o pagamento via Pix ou Cartão no checkout da InfinitePay.
           </p>
 
-          {/* Segmented Switcher between Pix (QR + Key) and Card (InfinitePay) */}
-          <div
-            role="tablist"
-            aria-label="Opções de pagamento"
-            className="w-full grid grid-cols-2 gap-1.5 p-1.5 bg-[#F3ECF7] rounded-xl mb-6"
-          >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activePaymentTab === 'pix'}
-              onClick={() => {
-                setActivePaymentTab('pix');
-                setAutoRedirectActive(false);
-              }}
-              className={`inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap ${
-                activePaymentTab === 'pix'
-                  ? 'bg-white text-[#5B236E] shadow-xs'
-                  : 'text-[#634B6F] hover:text-[#2E1639]'
-              }`}
-            >
-              <QrCode className="w-4 h-4 shrink-0" aria-hidden="true" />
-              <span>Pix (QR Code e Chave)</span>
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activePaymentTab === 'card'}
-              onClick={() => setActivePaymentTab('card')}
-              className={`inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap ${
-                activePaymentTab === 'card'
-                  ? 'bg-white text-[#5B236E] shadow-xs'
-                  : 'text-[#634B6F] hover:text-[#2E1639]'
-              }`}
-            >
-              <CreditCard className="w-4 h-4 shrink-0" aria-hidden="true" />
-              <span>Cartão (InfinitePay)</span>
-            </button>
-          </div>
-
-          {activePaymentTab === 'pix' ? (
-            <div className="w-full space-y-5">
-              {!qrError && (
-                <div className="mx-auto w-52 h-52 rounded-xl border border-[#E4D5EC] bg-white p-2.5 flex items-center justify-center">
-                  <img
-                    src={PIX_QR_IMAGE_PATH}
-                    alt={`QR Code Pix InfinitePay para ${PIX_RECIPIENT_NAME}`}
-                    referrerPolicy="no-referrer"
-                    onError={() => setQrError(true)}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              )}
-
-              <div className="text-xs text-[#634B6F] space-y-1">
-                <p>
-                  Valor: <strong className="text-[#2E1639] tabular-nums">R$ 97,00</strong> ·
-                  Favorecida: <strong className="text-[#2E1639]">{PIX_RECIPIENT_NAME}</strong>
-                </p>
-                <p>Abra o aplicativo do seu banco, escaneie o QR Code ou copie a chave Pix abaixo.</p>
-              </div>
-
-              <div className="rounded-xl border border-[#E4D5EC] bg-[#FAF7FC] p-3.5 text-left space-y-2">
-                <p className="text-xs font-medium text-[#634B6F]">Chave Pix (aleatória · InfinitePay)</p>
-                <p className="font-mono text-xs sm:text-sm text-[#2E1639] break-all select-all tabular-nums">
-                  {PIX_KEY}
-                </p>
-              </div>
-
+          {!isInsideIframe && autoRedirectActive && countdown > 0 && (
+            <div className="w-full rounded-xl bg-[#FAF7FC] border border-[#E4D5EC] px-4 py-3 mb-6 text-sm text-[#4A1A5B] flex items-center justify-between gap-3">
+              <span className="tabular-nums font-medium">
+                Redirecionando para o checkout em {countdown}s...
+              </span>
               <button
                 type="button"
-                onClick={handleCopyPixKey}
-                className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl bg-[#5B236E] text-white text-base font-semibold hover:bg-[#4A1A5B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5B236E] transition-colors shadow-sm cursor-pointer"
+                onClick={() => setAutoRedirectActive(false)}
+                className="text-xs font-medium text-[#634B6F] underline hover:text-[#2E1639] whitespace-nowrap shrink-0 cursor-pointer"
               >
-                {copiedKey ? (
-                  <>
-                    <Check className="w-5 h-5 shrink-0" aria-hidden="true" />
-                    <span>Chave Pix Copiada!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-5 h-5 shrink-0" aria-hidden="true" />
-                    <span>Copiar Chave Pix</span>
-                  </>
-                )}
-              </button>
-            </div>
-          ) : (
-            <div className="w-full space-y-4">
-              {!isInsideIframe && autoRedirectActive && countdown > 0 && (
-                <div className="w-full rounded-xl bg-[#FAF7FC] border border-[#E4D5EC] px-4 py-3 text-sm text-[#4A1A5B] flex items-center justify-between gap-3">
-                  <span className="tabular-nums font-medium">
-                    Redirecionando para o cartão em {countdown}s...
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setAutoRedirectActive(false)}
-                    className="text-xs font-medium text-[#634B6F] underline hover:text-[#2E1639] whitespace-nowrap shrink-0 cursor-pointer"
-                  >
-                    Pausar
-                  </button>
-                </div>
-              )}
-
-              <a
-                href={PAYMENT_CHECKOUT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl bg-[#5B236E] text-white text-base font-semibold hover:bg-[#4A1A5B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5B236E] transition-colors shadow-sm"
-              >
-                <CreditCard className="w-5 h-5 shrink-0" aria-hidden="true" />
-                <span>Pagar com Cartão (InfinitePay)</span>
-                <ExternalLink className="w-4 h-4 shrink-0" aria-hidden="true" />
-              </a>
-
-              <button
-                type="button"
-                onClick={handleCopyPaymentLink}
-                className="inline-flex items-center gap-1.5 text-sm text-[#5B236E] hover:text-[#4A1A5B] font-medium cursor-pointer py-1.5 px-2"
-              >
-                {copiedLink ? (
-                  <>
-                    <Check className="w-4 h-4" aria-hidden="true" />
-                    <span>Link de pagamento copiado</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" aria-hidden="true" />
-                    <span>Copiar link de pagamento</span>
-                  </>
-                )}
+                Pausar
               </button>
             </div>
           )}
 
-          <div className="mt-6 pt-5 border-t border-[#E4D5EC] w-full flex justify-center">
+          <a
+            href={PAYMENT_CHECKOUT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl bg-[#5B236E] text-white text-base font-semibold hover:bg-[#4A1A5B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5B236E] transition-colors shadow-sm"
+          >
+            <CreditCard className="w-5 h-5 shrink-0" aria-hidden="true" />
+            <span>Ir para o Checkout Agora (Pix ou Cartão)</span>
+            <ExternalLink className="w-4 h-4 shrink-0" aria-hidden="true" />
+          </a>
+
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-sm">
+            <button
+              type="button"
+              onClick={handleCopyPaymentLink}
+              className="inline-flex items-center gap-1.5 text-[#5B236E] hover:text-[#4A1A5B] font-medium cursor-pointer py-1.5 px-2"
+            >
+              {copiedLink ? (
+                <>
+                  <Check className="w-4 h-4" aria-hidden="true" />
+                  <span>Link do checkout copiado</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" aria-hidden="true" />
+                  <span>Copiar link do checkout</span>
+                </>
+              )}
+            </button>
+            <span className="text-[#E4D5EC]" aria-hidden="true">
+              ·
+            </span>
             <button
               type="button"
               onClick={handleResetForm}
-              className="text-sm text-[#634B6F] hover:text-[#2E1639] font-medium cursor-pointer py-1.5 px-2"
+              className="text-[#634B6F] hover:text-[#2E1639] font-medium cursor-pointer py-1.5 px-2"
             >
               Inscrever outra participante
             </button>
@@ -458,8 +344,8 @@ export function RegistrationForm() {
           Reserve seu lugar e finalize sua inscrição
         </h3>
         <p className="text-sm text-[#634B6F] mt-1.5 leading-relaxed">
-          Preencha seus dados abaixo e escolha se deseja pagar via Pix (QR Code ou Chave) ou Cartão
-          pelo link da InfinitePay.
+          Preencha seus dados abaixo para seguir diretamente para o checkout da InfinitePay e pagar
+          com Pix ou Cartão.
         </p>
       </div>
 
@@ -472,24 +358,15 @@ export function RegistrationForm() {
             <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-rose-700" aria-hidden="true" />
             <span>{submitError}</span>
           </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <a
-              href={PAYMENT_CHECKOUT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 font-semibold text-[#5B236E] underline"
-            >
-              Pagar no Cartão (InfinitePay)
-              <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
-            </a>
-            <button
-              type="button"
-              onClick={handleCopyPixKey}
-              className="inline-flex items-center gap-1.5 font-semibold text-[#5B236E] underline cursor-pointer"
-            >
-              {copiedKey ? 'Chave Pix copiada!' : 'Copiar Chave Pix'}
-            </button>
-          </div>
+          <a
+            href={PAYMENT_CHECKOUT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 font-semibold text-[#5B236E] underline"
+          >
+            Acessar checkout InfinitePay diretamente
+            <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+          </a>
         </div>
       )}
 
@@ -622,38 +499,6 @@ export function RegistrationForm() {
           />
         </div>
 
-        <div>
-          <span className="block text-sm font-medium text-[#2E1639] mb-2">
-            Como você prefere pagar? (R$ 97,00)
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <button
-              type="button"
-              onClick={() => setPaymentMethod('pix')}
-              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap ${
-                paymentMethod === 'pix'
-                  ? 'border-[#5B236E] bg-[#F3ECF7] text-[#5B236E]'
-                  : 'border-[#E4D5EC] bg-[#FAF7FC]/60 text-[#634B6F] hover:text-[#2E1639]'
-              }`}
-            >
-              <QrCode className="w-4 h-4 shrink-0" aria-hidden="true" />
-              <span>Pix (QR Code ou Chave)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setPaymentMethod('card')}
-              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap ${
-                paymentMethod === 'card'
-                  ? 'border-[#5B236E] bg-[#F3ECF7] text-[#5B236E]'
-                  : 'border-[#E4D5EC] bg-[#FAF7FC]/60 text-[#634B6F] hover:text-[#2E1639]'
-              }`}
-            >
-              <CreditCard className="w-4 h-4 shrink-0" aria-hidden="true" />
-              <span>Cartão (Link InfinitePay)</span>
-            </button>
-          </div>
-        </div>
-
         <button
           type="submit"
           disabled={isSubmitting}
@@ -664,22 +509,17 @@ export function RegistrationForm() {
               <Loader2 className="w-5 h-5 animate-spin shrink-0" aria-hidden="true" />
               <span>Registrando sua inscrição...</span>
             </>
-          ) : paymentMethod === 'pix' ? (
-            <>
-              <span>Confirmar e Pagar com Pix</span>
-              <ArrowRight className="w-5 h-5 shrink-0" aria-hidden="true" />
-            </>
           ) : (
             <>
-              <span>Confirmar e Ir para o Cartão</span>
+              <span>Confirmar Inscrição e Ir para o Pagamento</span>
               <ArrowRight className="w-5 h-5 shrink-0" aria-hidden="true" />
             </>
           )}
         </button>
 
         <p className="text-xs text-center text-[#634B6F] leading-relaxed">
-          Ao confirmar, seus dados ficam protegidos com a organização e você escolhe pagar via Pix
-          (QR Code/Chave) ou Cartão pela InfinitePay.
+          Ao confirmar, seus dados ficam protegidos com a organização e você segue direto para o
+          checkout seguro da InfinitePay (Pix ou Cartão).
         </p>
       </div>
     </form>
