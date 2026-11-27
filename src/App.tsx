@@ -4,6 +4,7 @@ import { ButterflyMark, GoldFlourishDivider } from './components/ButterflyMark';
 import { OrganizerDrawer } from './components/OrganizerDrawer';
 import { RegistrationForm } from './components/RegistrationForm';
 import {
+  PAYMENT_CHECKOUT_URL,
   POSTER_IMAGE_PATH,
   SESSION_MODULES,
   SUMMARY_HIGHLIGHTS,
@@ -63,7 +64,9 @@ export default function App() {
           {/* Zone 3: 1 Primary Action */}
           <div className="shrink-0">
             <a
-              href="#inscricao"
+              href={PAYMENT_CHECKOUT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-[#5B236E] text-white text-sm font-medium hover:bg-[#4A1A5B] transition-colors whitespace-nowrap shrink-0"
             >
               Garantir Vaga
@@ -113,7 +116,9 @@ export default function App() {
 
                 <div className="flex flex-wrap items-center gap-4">
                   <a
-                    href="#inscricao"
+                    href={PAYMENT_CHECKOUT_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-[#5B236E] text-white text-base font-semibold hover:bg-[#4A1A5B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5B236E] transition-colors shadow-sm whitespace-nowrap shrink-0"
                   >
                     <span>Fazer Minha Inscrição</span>
@@ -353,7 +358,7 @@ export default function App() {
                   <span className="text-xl font-semibold">,00</span>
                 </div>
                 <p className="text-xs text-[#634B6F]">
-                  Pix (QR Code ou Chave) ou Cartão via InfinitePay
+                  Pix ou Cartão via checkout seguro Kiwify
                 </p>
                 <a
                   href="#inscricao"
@@ -411,7 +416,7 @@ export default function App() {
                       </p>
                       <p className="text-sm text-[#634B6F]">
                         Ao enviar o formulário, você é direcionada automaticamente para o checkout da
-                        InfinitePay, onde pode pagar via Pix ou Cartão.
+                        Kiwify, onde pode pagar via Pix ou Cartão.
                       </p>
                     </div>
                   </div>

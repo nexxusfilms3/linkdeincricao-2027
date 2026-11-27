@@ -267,7 +267,7 @@ export function RegistrationForm() {
           </h3>
           <p className="text-base text-[#634B6F] leading-relaxed mb-6">
             Seus dados para a imersão <strong className="text-[#2E1639]">Meu 2027 com Propósito</strong>{' '}
-            foram registrados. Conclua agora o pagamento via Pix ou Cartão no checkout da InfinitePay.
+            foram registrados. Conclua agora o pagamento via Pix ou Cartão no checkout da Kiwify.
           </p>
 
           {!isInsideIframe && autoRedirectActive && countdown > 0 && (
@@ -344,7 +344,7 @@ export function RegistrationForm() {
           Reserve seu lugar e finalize sua inscrição
         </h3>
         <p className="text-sm text-[#634B6F] mt-1.5 leading-relaxed">
-          Preencha seus dados abaixo para seguir diretamente para o checkout da InfinitePay e pagar
+          Preencha seus dados abaixo para seguir diretamente para o checkout da Kiwify e pagar
           com Pix ou Cartão.
         </p>
       </div>
@@ -364,7 +364,7 @@ export function RegistrationForm() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 font-semibold text-[#5B236E] underline"
           >
-            Acessar checkout InfinitePay diretamente
+            Acessar checkout Kiwify diretamente
             <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
           </a>
         </div>
@@ -519,7 +519,7 @@ export function RegistrationForm() {
 
         <p className="text-xs text-center text-[#634B6F] leading-relaxed">
           Ao confirmar, seus dados ficam protegidos com a organização e você segue direto para o
-          checkout seguro da InfinitePay (Pix ou Cartão).
+          checkout seguro da Kiwify (Pix ou Cartão).
         </p>
       </div>
     </form>
